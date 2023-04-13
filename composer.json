@@ -1,0 +1,29 @@
+{
+    "name": "sprigs/filterable-belongs-to-many",
+    "description": "A Laravel Nova package that makes filtering possible when linking resources.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.3|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SPRIGS\\FilterableBelongsToMany\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SPRIGS\\FilterableBelongsToMany\\FieldServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
