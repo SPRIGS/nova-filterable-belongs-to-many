@@ -3,12 +3,8 @@ let path = require('path')
 require('./nova.mix')
 
 mix.alias({
-  '@': path.join(__dirname, '../../vendor/laravel/nova/resources/js'),
+  '@': path.join(__dirname, '../../laravel/nova/resources/js'),
 })
-
-// mix.alias({
-//   'laravel-nova': path.join(__dirname, '../../vendor/laravel/nova/resources/js/mixins/'),
-// });
 
 mix
   .setPublicPath('dist')
