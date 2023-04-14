@@ -27,10 +27,8 @@
 
                 <div class="relative w-full " v-for="filter in availableFilters">
                   <span>{{ filter.label }}</span>
-                  <SelectControl 
-                  v-model:selected="filter.value"
-                  :options="filter.options"
-                   @change="filterChanged(filter, $event)" size="sm" />
+                  <SelectControl v-model:selected="filter.value" :options="filter.options"
+                    @change="filterChanged(filter, $event)" size="sm" />
                 </div>
               </div>
 
@@ -125,25 +123,45 @@ export default {
   },
 
   computed: {
-    filteredResources() {
-      
 
+    // TODO: Handle filter types better
+    filteredResources() {
+      // Helper function to check if a resource matches a filter
       const filterMatches = (resource, filter) => {
         if (filter.value === 'all') return true;
 
-        const matchingField = resource.fields.find(field => field.attribute === filter.name);
-        return matchingField && matchingField.value === filter.value;
+        const matchingField = resource.fields.find(field => {
+          return field.attribute === filter.name;
+        });
+
+        let matchingFieldLabel = matchingField.value;
+
+        if (typeof matchingFieldLabel === 'object') {
+
+
+          if (typeof matchingFieldLabel[0] == 'string') {
+            return matchingField && matchingFieldLabel.includes(filter.value);
+          }
+
+          matchingFieldLabel = matchingField.value[0]?.display;
+        }
+
+
+
+
+        return matchingField && matchingFieldLabel === filter.value;
       };
 
+      // Helper function to check if a resource matches the search term
       const searchMatches = (resource) =>
         resource.title.toLowerCase().includes(this.search.toLowerCase());
 
+      // Filter resources based on filters and search term
       return this.resources.filter(resource =>
         this.availableFilters.every(filter => filterMatches(resource, filter)) && searchMatches(resource)
       );
-
-      
     }
+
 
   },
 
@@ -155,33 +173,59 @@ export default {
         this.value.length > 0 ? JSON.stringify(this.value) : ''
       )
     },
+
+
     getAvailableFilters() {
+      // Helper function to create a base filter object
       const createBaseFilter = (filter) => ({
-        label: filter,
-        name: filter.replace(/([A-Z])/g, ' $1').trim().replace(/ /g, '_').toLowerCase(),
+        label: filter.label,
+        name: filter.name,
         value: 'all',
         options: [{ value: 'all', label: 'All' }],
       });
 
+      // Helper function to add an option to ça filter if it doesn't already exist
       const addOptionToFilter = (filters, field) => {
         const filter = filters.find(filter => filter.name === field.attribute);
 
         if (filter) {
           const optionExists = filter.options.some(option => option.value === field.value);
-
+          
+          // TODO: Handle filter types better
           if (!optionExists) {
-            filter.options.push({
-              value: field.value,
-              label: field.value.charAt(0).toUpperCase() + field.value.slice(1),
-            });
+            let fieldLabel = field.value;
+
+            if (typeof fieldLabel === 'object') {
+              if (typeof fieldLabel[0] == 'string') {
+
+                fieldLabel.forEach((item, index) => {
+                  filter.options.push({
+                    value: fieldLabel[index],
+                    label: fieldLabel[index],
+                  });
+                })
+                fieldLabel = null;
+              } else {
+                fieldLabel = field.value[0]?.display;
+              }
+            }
+
+            if (fieldLabel) {
+              filter.options.push({
+                value: fieldLabel,
+                label: fieldLabel,
+              });
+            }
           }
         }
 
         return filters;
       };
 
+      // Create the base filters
       const baseFilters = this.field.availableFilters.map(createBaseFilter);
 
+      // Add options to the filters based on available resources
       return this.resources.reduce((filters, resource) => {
         resource.fields.forEach(field => {
           filters = addOptionToFilter(filters, field);
@@ -205,7 +249,6 @@ export default {
         value: resource.id.value,
         display: resource.title
       };
-      console.log(selectedResource);
       // uf the resource is already selected, remove it
       if (this.value.map(v => v.value).indexOf(resource.id.value) > -1) {
         this.value = this.value.filter(v => v.value !== resource.id.value);
