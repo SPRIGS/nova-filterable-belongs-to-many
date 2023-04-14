@@ -153,8 +153,17 @@ export default {
       };
 
       // Helper function to check if a resource matches the search term
-      const searchMatches = (resource) =>
-        resource.title.toLowerCase().includes(this.search.toLowerCase());
+      const searchMatches = (resource) => {
+        const searchLowerCase = this.search.toLowerCase();
+
+        // TODO: Handle search types better
+        const foundInSearchableFields = this.field.searchableFields.some(field => {
+          const searchableField = resource.fields.find(_field => _field.attribute === field);
+          return searchableField && searchableField.value.toLowerCase().includes(searchLowerCase);
+        });
+
+        return foundInSearchableFields || resource.title.toLowerCase().includes(searchLowerCase);
+      };
 
       // Filter resources based on filters and search term
       return this.resources.filter(resource =>

@@ -16,6 +16,7 @@ class FilterableBelongsToMany extends Field
 
     public $availableFilters = [];
     public $hiddenFields = [];
+    public $searchableFields = [];    
 
     /**
      * The field's component.
@@ -182,6 +183,17 @@ class FilterableBelongsToMany extends Field
         $this->hiddenFields = $hiddenFieldsArray;
         return $this;
     }
+    
+    /**
+     * Searchable fields fields.
+     *
+     * @return $this
+     */
+    public function makeSearchable($searchableFieldsArray = [])
+    {
+        $this->searchableFields = $searchableFieldsArray;
+        return $this;
+    }
 
     /**
      * Transform the result from resource.
@@ -213,6 +225,7 @@ class FilterableBelongsToMany extends Field
                 'style' => $this->style,
                 'availableFilters' => $this->availableFilters,
                 'hiddenFields' => $this->hiddenFields,
+                'searchableFields' => $this->searchableFields,
                 'belongsToManyRelationship' => $this->manyToManyRelationship,
                 'resourceName' => $this->resourceName,
                 'singularLabel' => $this->singularLabel ?? $this->resourceClass::singularLabel(),
