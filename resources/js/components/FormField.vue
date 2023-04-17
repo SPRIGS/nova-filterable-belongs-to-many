@@ -110,7 +110,7 @@ export default {
 
 
   mounted() {
-    Nova.request().get(`/nova-api/${this.field.resourceName}`)
+    Nova.request().get(`/nova-api/${this.field.resourceName}?perPage=1000`)
       .then((data) => {
         this.resources = data.data.resources;
 
