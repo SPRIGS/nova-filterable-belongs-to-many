@@ -34,10 +34,10 @@
 
               <!-- End of Table filters -->
 
-              <div class="overflow-hidden overflow-x-auto relative">
+              <div class=" overflow-x-auto relative max-h-96 block">
                 <table v-if="resources.length > 0" class="w-full divide-y divide-gray-100 dark:divide-gray-700"
                   data-testid="resource-table">
-                  <ResourceTableHeader :resource-name="resourceName" :fields="resources[0].fields"
+                  <ResourceTableHeader class="sticky top-0" :resource-name="resourceName" :fields="resources[0].fields"
                     :should-show-column-borders="shouldShowColumnBorders" :should-show-checkboxes="true"
                     :sortable="sortable" @order="requestOrderByChange" @reset-order-by="resetOrderBy" />
                   <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -110,7 +110,7 @@ export default {
 
 
   mounted() {
-    Nova.request().get(`/nova-api/${this.field.resourceName}`)
+    Nova.request().get(`/nova-api/${this.field.resourceName}?perPage=1000`)
       .then((data) => {
         this.resources = data.data.resources;
 
@@ -290,5 +290,11 @@ export default {
   .md\:w-full {
     width: 100%;
   }
+}
+.max-h-96 {
+  max-height: 24rem;
+}
+.sticky {
+  position: sticky;
 }
 </style>
